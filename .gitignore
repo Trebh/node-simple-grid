@@ -1,0 +1,6 @@
+config/config.js
+.jshintrc
+node_modules/*
+*.log
+.*
+!/.gitignore
