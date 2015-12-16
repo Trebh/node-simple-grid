@@ -1,6 +1,6 @@
 'use strict';
 
-var createGrid = require('../index').createGrid;
+var createGrid = require('../index').createNewGrid;
 var removeGrid = require('../index').removeGrid;
 
 describe('grid Creation', function() {
@@ -24,10 +24,11 @@ describe('grid Creation', function() {
   });
 
   it('should create a grid with 2 rows and 2 columns', function(done) {
-
+    
     expect(newGrid.rows).toBe(2);
     expect(newGrid.columns).toBe(2);
     expect(newGrid.id).toBeDefined();
+    expect(newGrid.vectors.length).toBe(4);
     done();
   });
 

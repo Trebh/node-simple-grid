@@ -9,7 +9,7 @@ var remove = require('./api/delete');
 mongoose.createConnection(config.MONGODB_URL);
 
 module.exports = {
-	createGrid: create.createGrid,
+	createNewGrid: create.createNewGrid,
 	removeGrid: remove.removeGrid,
 	updateVector: update.updateVector
 };
