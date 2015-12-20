@@ -5,12 +5,13 @@ var Vector = require('../model/vector').model;
 var Task = require('data.task');
 var R = require('ramda');
 var Async = require('control.async')(Task);
+var putObj = require('./put').putObj;
 
 module.exports = {
   createNewGrid: createNewGrid
 };
 
-function createNewGrid(rows, columns) {
+function createNewGrid(rows, columns, vects) {
 
   var newGrid = new Grid({
     rows: rows,
@@ -35,7 +36,15 @@ function createNewGrid(rows, columns) {
       var saveAllVectors = Async.parallel(R.map(saveVector, vectors));
       return saveAllVectors;
     })
-    .map(function(savedVectors) {
+    .chain(function(){
+    	if (!vects || vects.length === 0){
+    		return new Task.of(newGrid);
+    	} else {
+    		var updateAllVectors = Async.parallel(R.map(updateVector(newGrid), vects));
+    		return updateAllVectors;
+    	}
+    })
+    .map(function() {
       return newGrid;
     });
 }
@@ -46,10 +55,12 @@ function initVectors(rows, columns, grid) {
   vectors = R.map(newVectGrid(grid),vectors);
 
   var iterator = getIterator(rows, columns)();
-
+  
   return R.map(setBaseVectorPos(iterator), vectors);
 
 }
+
+
 
 function newVectGrid(grid) {
   return function newVect() {
@@ -100,4 +111,10 @@ function saveVector(vector) {
       return;
     });
   });
+}
+
+function updateVector(grid){
+	return function(vector){
+		return putObj(grid, vector);
+	};
 }

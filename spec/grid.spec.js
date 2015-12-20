@@ -38,8 +38,7 @@ describe('grid Creation', function() {
       .fork(handleAfterErr, handleAfterSuccess);
     function handleAfterErr(err) {
       console.error(err);
-      fail('grid deletion error: ' + err);
-      done();
+      done.fail('grid deletion error: ' + err);
     }
 
     function handleAfterSuccess() {
