@@ -7,17 +7,17 @@ var grid = require('./grid').schema;
 var vector = new Schema({
   row: Number,
   column: Number,
-  content: String,
+  content: {},
   _ofGrid: { type: Schema.Types.ObjectId, ref: 'grid' }
 });
 
-vector.methods.getContent = function(){
+/*vector.methods.getContent = function(){
 	return JSON.parse(this.content);
-};
+};*/
 
-vector.methods.store = function(what){
+/*vector.methods.store = function(what){
 	this.content = JSON.stringify(what);
-};
+};*/
 
 var Vector = mongoose.model('Vector', vector);
 

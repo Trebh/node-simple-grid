@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function putObjUncurried(grid, vector) {
-  if (!vector.row || !vector.column || !grid || !grid.id) {
+  if ((vector.row !== 0 && !vector.row) || (vector.column !== 0 && !vector.column) || !grid || !grid.id) {
     return new Task.rejected('method_invoke_err');
   }
 
@@ -31,7 +31,7 @@ function putObjUncurried(grid, vector) {
           	if (!foundVect){
           		reject('notfound_err');
           	}
-            foundVect.store(vector.content);
+            foundVect.content = vector.content;
             foundVect.save(function(err){
             	if (err){
             		reject(err);

@@ -67,7 +67,7 @@ function newVectGrid(grid) {
     return new Vector({
       row: 0,
       column: 0,
-      content: JSON.stringify({}),
+      content: {},
       _ofGrid: grid.id
     });
   };

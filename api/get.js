@@ -1,17 +1,27 @@
-/*'use strict';
+'use strict';
 
-var mongoose = require('mongoose');
-var config = require('../config/config');
 var Task = require('data.task');
-var Grid = require('../model/grid').model;
 var Vector = require('../model/vector').model;
 
 module.exports = {
-  getObj: getObj
+  getVector: getVector
 };
 
-function getObj(row, col){
-	return new Task(function(reject, resolve){
-Vector.findOne({row:row})
-	});
-}*/
+function getVector(grid, vector) {
+  return new Task(function(reject, resolve) {
+    if (!grid || !grid.id) {
+      reject('method_invoke_err');
+    }
+    Vector.findOne({
+        row: vector.row,
+        column: vector.column,
+        _ofGrid: grid.id
+      })
+      .then(function(foundVect) {
+        resolve(foundVect);
+      })
+      .then(null, function(err){
+      	reject(err);
+      });
+  });
+}
