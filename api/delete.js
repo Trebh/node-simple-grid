@@ -5,12 +5,14 @@ var Vector = require('../model/vector').model;
 var Task = require('data.task');
 var Async = require('control.async')(Task);
 var R = require('ramda');
+var putObj = require('./put').putObj;
 
 module.exports = {
-  removeGrid: removeGrid
+  removeGrid: removeGrid,
+  removeObj: R.curry(removeObjUncurried)
 };
 
-function removeGrid(grid){
+function removeGrid(grid) {
   return new Task.of(grid)
     .chain(removeVectorsStep)
     .chain(removeGridStep);
@@ -18,7 +20,7 @@ function removeGrid(grid){
 
 function removeVectorsStep(grid) {
   return Async.parallel(R.map(findVector, grid.vectors))
-    .map(function(){
+    .map(function() {
       return grid;
     });
 }
@@ -37,10 +39,15 @@ function removeGridStep(grid) {
 function findVector(objId) {
   return new Task(function(reject, resolve) {
     Vector.findByIdAndRemove(objId)
-      .then(function(){
+      .then(function() {
         resolve(true);
-      }, function(err){
+      }, function(err) {
         reject(err);
       });
   });
+}
+
+function removeObjUncurried(grid, vector) {
+  vector.content = {};
+  return putObj(grid, vector);
 }

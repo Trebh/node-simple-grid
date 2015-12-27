@@ -2,8 +2,8 @@
 
 var Task = require('data.task');
 var Grid = require('../model/grid').model;
-var Vector = require('../model/vector').model;
 var R = require('ramda');
+var getVector = require('./get').getVector;
 
 module.exports = {
   putObj: R.curry(putObjUncurried)
@@ -23,7 +23,7 @@ function putObjUncurried(grid, vector) {
   return new Task.of(grid)
     .chain(findGrid)
     .map(mapFoundGridRes(vector))
-    .chain(findVector)
+    .chain(getVector(grid))
     .chain(persistVector(vector));
 
 }
@@ -33,17 +33,6 @@ function findGrid(grid) {
     Grid.findById(grid.id)
       .then(function(foundGrid) {
         resolve(foundGrid);
-      }, function(err) {
-        reject(err);
-      });
-  });
-}
-
-function findVector(vectorToFind) {
-  return new Task(function(reject, resolve) {
-    Vector.findOne(vectorToFind)
-      .then(function(vector) {
-        resolve(vector);
       }, function(err) {
         reject(err);
       });
