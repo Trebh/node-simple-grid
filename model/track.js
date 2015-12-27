@@ -3,25 +3,23 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var grid = require('./grid').schema;
-var shape = require('./shape').schema;
+var vector = require('./vector').schema;
 
-var vector = new Schema({
-  row: Number,
-  column: Number,
-  content: {},
+var track = new Schema({
+  name: String,
   _ofGrid: {
     type: Schema.Types.ObjectId,
     ref: 'grid'
   },
-  _ofShape: {
+  shapes: {
     type: Schema.Types.ObjectId,
     ref: 'shape'
   }
 });
 
-var Vector = mongoose.model('Vector', vector);
+var Track = mongoose.model('Track', track);
 
 module.exports = {
-  model: Vector,
-  schema: vector
+  model: Track,
+  schema: track
 };
