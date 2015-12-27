@@ -8,7 +8,7 @@ describe('grid Creation', function() {
   var newGrid;
 
   beforeEach(function(done) {
-    var toDo = createGrid(2, 2);
+    var toDo = createGrid(2, 2, []);
     toDo.fork(handleErr, handleSuccess);
 
     function handleErr(err) {

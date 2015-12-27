@@ -6,12 +6,14 @@ var Task = require('data.task');
 var R = require('ramda');
 var Async = require('control.async')(Task);
 var putObj = require('./put').putObj;
+var Shape = require('../model/shape').model;
 
 module.exports = {
-  createNewGrid: createNewGrid
+  createNewGrid: R.curry(createNewGridUncurried),
+  createShape: R.curry(createShapeUncurried)
 };
 
-function createNewGrid(rows, columns, vects) {
+function createNewGridUncurried(rows, columns, vects) {
 
   var newGrid = new Grid({
     rows: rows,
@@ -36,13 +38,14 @@ function createNewGrid(rows, columns, vects) {
       var saveAllVectors = Async.parallel(R.map(saveVector, vectors));
       return saveAllVectors;
     })
-    .chain(function(){
-    	if (!vects || vects.length === 0){
-    		return new Task.of(newGrid);
-    	} else {
-    		var updateAllVectors = Async.parallel(R.map(updateVector(newGrid), vects));
-    		return updateAllVectors;
-    	}
+    .chain(function() {
+      if (!vects || vects.length === 0) {
+        return new Task.of(newGrid);
+      } else {
+        var updateAllVectors = Async.parallel(R.map(updateVector(newGrid),
+          vects));
+        return updateAllVectors;
+      }
     })
     .map(function() {
       return newGrid;
@@ -52,15 +55,13 @@ function createNewGrid(rows, columns, vects) {
 function initVectors(rows, columns, grid) {
 
   var vectors = R.repeat({}, rows * columns);
-  vectors = R.map(newVectGrid(grid),vectors);
+  vectors = R.map(newVectGrid(grid), vectors);
 
   var iterator = getIterator(rows, columns)();
-  
+
   return R.map(setBaseVectorPos(iterator), vectors);
 
 }
-
-
 
 function newVectGrid(grid) {
   return function newVect() {
@@ -113,8 +114,18 @@ function saveVector(vector) {
   });
 }
 
-function updateVector(grid){
-	return function(vector){
-		return putObj(grid, vector);
-	};
+function updateVector(grid) {
+  return function(vector) {
+    return putObj(grid, vector);
+  };
+}
+
+function createShapeUncurried(name, vectors, width, origin, direction, order,
+  grid) {
+  var newShape = new Shape({
+  	name: name,
+  	order: order,
+  	width: width,
+  	_ofGrid: grid.id
+  });
 }

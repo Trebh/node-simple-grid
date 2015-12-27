@@ -5,8 +5,9 @@ var Schema = mongoose.Schema;
 var grid = require('./grid').schema;
 var vector = require('./vector').schema;
 
-var shape = new Schema({
+var element = new Schema({
   name: String,
+  order: Number,
   vectors: [{
     type: Schema.Types.ObjectId,
     ref: 'vector'
@@ -14,12 +15,21 @@ var shape = new Schema({
   _ofGrid: {
     type: Schema.Types.ObjectId,
     ref: 'grid'
+  },
+  width: Number,
+  origin: {
+    type: Schema.Types.ObjectId,
+    ref: 'vector'
+  },
+  direction: {
+    type: Schema.Types.ObjectId,
+    ref: 'vector'
   }
 });
 
-var Shape = mongoose.model('Shape', shape);
+var Element = mongoose.model('Element', element);
 
 module.exports = {
-  model: Shape,
-  schema: shape
+  model: Element,
+  schema: element
 };
