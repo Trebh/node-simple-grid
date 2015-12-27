@@ -2,12 +2,13 @@
 
 var Task = require('data.task');
 var Vector = require('../model/vector').model;
+var R = require('ramda');
 
 module.exports = {
-  getVector: getVector
+  getVector: R.curry(getVectorUncurried)
 };
 
-function getVector(grid, vector) {
+function getVectorUncurried(grid, vector) {
   return new Task(function(reject, resolve) {
     if (!grid || !grid.id) {
       reject('method_invoke_err');

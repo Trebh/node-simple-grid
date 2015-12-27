@@ -10,39 +10,68 @@ module.exports = {
 };
 
 function putObjUncurried(grid, vector) {
-  if ((vector.row !== 0 && !vector.row) || (vector.column !== 0 && !vector.column) || !grid || !grid.id) {
+
+  if ((vector.row !== 0 && !vector.row) || (vector.column !== 0 && !vector.column) ||
+    !grid || !grid.id) {
     return new Task.rejected('method_invoke_err');
   }
 
   if ((vector.row > (grid.rows - 1)) || (vector.column > (grid.columns - 1))) {
     return new Task.rejected('boundaries_err');
   }
+
+  return new Task.of(grid)
+    .chain(findGrid)
+    .map(mapFoundGridRes(vector))
+    .chain(findVector)
+    .chain(persistVector(vector));
+
+}
+
+function findGrid(grid) {
   return new Task(function(reject, resolve) {
-    var thisGrid;
     Grid.findById(grid.id)
-      .then(function(grid) {
-        thisGrid = grid;
-        Vector.findOne({
-            row: vector.row,
-            column: vector.column,
-            _ofGrid: grid.id
-          })
-          .then(function(foundVect) {
-          	if (!foundVect){
-          		reject('notfound_err');
-          	}
-            foundVect.content = vector.content;
-            foundVect.save(function(err){
-            	if (err){
-            		reject(err);
-            		return;
-            	}
-            	resolve(foundVect);
-            	return;
-            });
-          }, function(err) {
-            reject(err);
-          });
+      .then(function(foundGrid) {
+        resolve(foundGrid);
+      }, function(err) {
+        reject(err);
       });
   });
+}
+
+function findVector(vectorToFind) {
+  return new Task(function(reject, resolve) {
+    Vector.findOne(vectorToFind)
+      .then(function(vector) {
+        resolve(vector);
+      }, function(err) {
+        reject(err);
+      });
+  });
+}
+
+function mapFoundGridRes(vector) {
+  return function(grid) {
+    return {
+      row: vector.row,
+      column: vector.column,
+      _ofGrid: grid.id
+    };
+  };
+}
+
+function persistVector(vector) {
+  return function(foundVect) {
+    return new Task(function(reject, resolve) {
+      foundVect.content = vector.content;
+      foundVect.save(function(err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(foundVect);
+        return;
+      });
+    });
+  };
 }

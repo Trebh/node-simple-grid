@@ -94,7 +94,7 @@ afterEach(function(done) {
   }
 
   function handleAfterSuccess() {
-    console.log('after');
+    console.log('clean up');
     done();
   }
 });
