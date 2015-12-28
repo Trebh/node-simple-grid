@@ -5,7 +5,8 @@ var Vector = require('../model/vector').model;
 var R = require('ramda');
 
 module.exports = {
-  getVector: R.curry(getVectorUncurried)
+  getVector: R.curry(getVectorUncurried),
+  findDocById: R.curry(findByIdUncurried)
 };
 
 function getVectorUncurried(grid, vector) {
@@ -20,6 +21,18 @@ function getVectorUncurried(grid, vector) {
       })
       .then(function(foundVect) {
         resolve(foundVect);
+      })
+      .then(null, function(err){
+      	reject(err);
+      });
+  });
+}
+
+function findByIdUncurried(model, docId){
+	return new Task(function(reject, resolve) {
+    model.findOne({'_id': docId})
+      .then(function(doc) {
+        resolve(doc);
       })
       .then(null, function(err){
       	reject(err);

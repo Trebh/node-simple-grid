@@ -1,33 +1,34 @@
 'use strict';
 
-var Grid = require('../model/grid').model;
 var Vector = require('../model/vector').model;
 var Task = require('data.task');
 var Async = require('control.async')(Task);
 var R = require('ramda');
 var putObj = require('./put').putObj;
+var findDocById = require('./get').findDocById;
 
 module.exports = {
-  removeGrid: removeGrid,
-  removeObj: R.curry(removeObjUncurried)
+  removeGrid: removeDocAndVects,
+  removeObj: R.curry(removeObjUncurried),
+  removeShape: R.curry(removeDocAndDeassociateVectsUncurried)('_ofShape')
 };
 
-function removeGrid(grid) {
-  return new Task.of(grid)
+function removeDocAndVects(doc) {
+  return new Task.of(doc)
     .chain(removeVectorsStep)
-    .chain(removeGridStep);
+    .chain(removeDocStep);
 }
 
-function removeVectorsStep(grid) {
-  return Async.parallel(R.map(findVector, grid.vectors))
+function removeVectorsStep(doc) {
+  return Async.parallel(R.map(findAndRemoveVector, doc.vectors))
     .map(function() {
-      return grid;
+      return doc;
     });
 }
 
-function removeGridStep(grid) {
+function removeDocStep(doc) {
   return new Task(function(reject, resolve) {
-    Grid.findByIdAndRemove(grid.id)
+    doc.constructor.findByIdAndRemove(doc.id)
       .then(function() {
         resolve(true);
       }, function(err) {
@@ -36,7 +37,7 @@ function removeGridStep(grid) {
   });
 }
 
-function findVector(objId) {
+function findAndRemoveVector(objId) {
   return new Task(function(reject, resolve) {
     Vector.findByIdAndRemove(objId)
       .then(function() {
@@ -50,4 +51,43 @@ function findVector(objId) {
 function removeObjUncurried(grid, vector) {
   vector.content = {};
   return putObj(grid, vector);
+}
+
+function removeDocAndDeassociateVectsUncurried(prop, doc) {
+  return new Task.of(doc)
+    .chain(R.curry(deassocVects)(prop))
+    .chain(removeDocStep);
+}
+
+function deassocVects(prop, doc) {
+  return Async.parallel(R.map(R.curry(findAndDeassocVector)(prop), doc.vectors))
+    .map(function() {
+      doc.vectors = [];
+      return doc;
+    });
+}
+
+function findAndDeassocVector(prop, vectId) {
+  return new Task.of(vectId)
+    .chain(findDocById(Vector))
+    .map(R.curry(resetProp)(prop))
+    .chain(saveVector);
+}
+
+function resetProp(prop, vect) {
+  vect[prop] = undefined;
+  return vect;
+}
+
+function saveVector(vector) {
+  return new Task(function(reject, resolve) {
+    vector.save(function(err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(vector);
+      return;
+    });
+  });
 }

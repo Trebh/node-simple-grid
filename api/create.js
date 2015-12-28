@@ -7,15 +7,18 @@ var R = require('ramda');
 var Async = require('control.async')(Task);
 var putObj = require('./put').putObj;
 var Shape = require('../model/shape').model;
+var getVector = require('./get').getVector;
+var updateVectorProp = require('./update').updateVector;
 
 module.exports = {
   createNewGrid: R.curry(createNewGridUncurried),
   createShape: R.curry(createShapeUncurried)
 };
 
-function createNewGridUncurried(rows, columns, vects) {
+function createNewGridUncurried(rows, columns, vects, name) {
 
   var newGrid = new Grid({
+  	name: name,
     rows: rows,
     columns: columns
   });
@@ -42,7 +45,7 @@ function createNewGridUncurried(rows, columns, vects) {
       if (!vects || vects.length === 0) {
         return new Task.of(newGrid);
       } else {
-        var updateAllVectors = Async.parallel(R.map(updateVector(newGrid),
+        var updateAllVectors = Async.parallel(R.map(updateVectorContent(newGrid),
           vects));
         return updateAllVectors;
       }
@@ -114,18 +117,81 @@ function saveVector(vector) {
   });
 }
 
-function updateVector(grid) {
+function updateVectorContent(grid) {
   return function(vector) {
     return putObj(grid, vector);
   };
 }
 
-function createShapeUncurried(name, vectors, width, origin, direction, order,
-  grid) {
+function createShapeUncurried(grid, vectors, name) {
+
+	var modelVectors = R.map(R.curry(vectToModel)(grid), vectors);
+
   var newShape = new Shape({
   	name: name,
-  	order: order,
-  	width: width,
+  	modelVectors,
   	_ofGrid: grid.id
   });
+
+  var findVectsTask = R.map(getVector(grid), modelVectors);
+  return Async.parallel(findVectsTask)
+  	.chain(noNullResults)
+  	.chain(R.curry(updateVectorsShape)(grid, newShape))
+  	.map(passNewShape(newShape))
+  	.chain(persistShape);
+}
+
+function persistShape(shape){
+	return new Task(function(reject, resolve){
+		shape.save(function(err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(shape);
+      return;
+    });
+	});
+}
+
+function passNewShape(shape){
+	return function(vectors){
+		shape.vectors = vectors;
+		return shape;
+	};
+}
+
+function noNullResults(arrRes){
+	var isNull = function(a){
+		return ((a === null) || (a === undefined));
+	};
+	return new Task(function(reject,resolve){
+		if (R.any(isNull, arrRes)){
+			reject('err_vector_not_found');
+			return;
+		} else {
+			resolve(arrRes);
+			return;
+		}
+	});
+}
+
+function updateVectorsShape(grid, shape, arrVects){
+	var newArr = R.map(R.curry(insertShape)(shape), arrVects);
+	var updateTasks = R.map(updateVectorProp(grid), newArr);
+	return Async.parallel(updateTasks);
+}
+
+function insertShape(shape, vect){
+	vect._ofShape = shape.id;
+	return vect;
+}
+
+function vectToModel(grid, vect){
+	return new Vector({
+		row: vect.row,
+		column: vect.column,
+		_ofGrid: grid.id,
+		content: vect.content
+	});
 }

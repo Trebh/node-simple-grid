@@ -7,6 +7,7 @@ var shape = require('./shape').schema;
 var track = require('./track').schema;
 
 var grid = new Schema({
+	name: String,
   rows: Number,
   columns: Number,
   vectors: [{

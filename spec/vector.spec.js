@@ -7,7 +7,7 @@ var Grid = require('../model/grid').model;
 var Task = require('data.task');
 var Async = require('control.async')(Task);
 
-describe('vector API', function() {
+describe('vector specs', function() {
 
   var thisGrid;
   var counter = 0;
@@ -39,13 +39,15 @@ describe('vector API', function() {
 
   it('should put an obj inside a vector of given test grid', function(done) {
 
+    var that = this;
+    
     putCall(thisGrid, {
       row: 2,
       column: 3,
       content: {
         awesomeProp: 'AWESOME!'
       }
-    }, handleError, assert);
+    }, handleError(that, done), assert);
 
     function assert(vector) {
 

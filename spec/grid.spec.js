@@ -3,12 +3,12 @@
 var createGrid = require('../index').createNewGrid;
 var removeGrid = require('../index').removeGrid;
 
-describe('grid Creation', function() {
+describe('grid Specs', function() {
 
   var newGrid;
 
   beforeEach(function(done) {
-    var toDo = createGrid(2, 2, []);
+    var toDo = createGrid(2, 2, [], 'testsAreFun');
     toDo.fork(handleErr, handleSuccess);
 
     function handleErr(err) {
@@ -25,6 +25,7 @@ describe('grid Creation', function() {
 
   it('should create a grid with 2 rows and 2 columns', function(done) {
     
+    expect(newGrid.name).toBe('testsAreFun');
     expect(newGrid.rows).toBe(2);
     expect(newGrid.columns).toBe(2);
     expect(newGrid.id).toBeDefined();
