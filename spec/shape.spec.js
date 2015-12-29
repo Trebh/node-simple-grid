@@ -2,7 +2,10 @@
 
 var createShape = require('../index').createShape;
 var removeShape = require('../index').removeShape;
-var Grid = require('../model/grid').model;
+var createGrid = require('../index').createNewGrid;
+var removeGrid = require('../index').removeGrid;
+var Task = require('data.task');
+var Async = require('control.async')(Task);
 
 describe('shape specs', function() {
 
@@ -10,11 +13,20 @@ describe('shape specs', function() {
   var newShape;
 
   beforeEach(function(done) {
-    Grid.findById('56815f87bf8f65573ad30937')
-      .then(function(grid) {
-        thisGrid = grid;
-        done();
-      });
+  	var toDo = createGrid(4, 4, [], 'shape_spec');
+    toDo.fork(handleErr, handleSuccess);
+
+    function handleErr(err) {
+      console.error(err);
+      fail('grid creation error: ' + err);
+      done();
+    }
+
+    function handleSuccess(data) {
+      thisGrid = data;
+      done();
+    }
+
   });
 
   var createCall = function(grid, vectors, name, errCb, okCb) {
@@ -59,7 +71,8 @@ describe('shape specs', function() {
   });
 
 	afterEach(function(done) {
-    removeShape(newShape)
+		var cleanUp = Async.parallel([removeShape(newShape), removeGrid(thisGrid)]);
+    cleanUp
       .fork(handleAfterErr, handleAfterSuccess);
     function handleAfterErr(err) {
       console.error(err);

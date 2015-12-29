@@ -3,9 +3,10 @@
 var putObj = require('../index').putObj;
 var getVector = require('../index').getVector;
 var moveObj = require('../index').moveObj;
-var Grid = require('../model/grid').model;
 var Task = require('data.task');
 var Async = require('control.async')(Task);
+var createGrid = require('../index').createNewGrid;
+var removeGrid = require('../index').removeGrid;
 
 describe('vector specs', function() {
 
@@ -13,11 +14,31 @@ describe('vector specs', function() {
   var counter = 0;
 
   beforeEach(function(done) {
-    Grid.findById('5676fea4c397d86c69837232')
-      .then(function(grid) {
-        thisGrid = grid;
-        done();
-      });
+    var toDo = createGrid(4, 4, [{
+      row: 1,
+      column: 0,
+      content:{
+        message: 'hello'
+      }
+    },{
+      row: 2,
+      column: 1,
+      content:{
+        player: 'moving'
+      }
+    }], 'vector_spec');
+    toDo.fork(handleErr, handleSuccess);
+
+    function handleErr(err) {
+      console.error(err);
+      fail('grid creation error: ' + err);
+      done();
+    }
+
+    function handleSuccess(data) {
+      thisGrid = data;
+      done();
+    }
   });
 
   var putCall = function(grid, vector, errCb, okCb) {
@@ -125,27 +146,7 @@ describe('vector specs', function() {
 
   afterEach(function(done) {
 
-    if (counter < 2) {
-      counter++;
-      done();
-      return;
-    }
-
-    var cleanPutTask = putObj(thisGrid, {
-      row: 2,
-      column: 3,
-      content: {}
-    });
-
-    var cleanMoveTask = moveObj(thisGrid, {
-      row: 3,
-      column: 0
-    }, {
-      row: -1,
-      column: 1
-    });
-
-    Async.parallel([cleanPutTask, cleanMoveTask])
+    removeGrid(thisGrid)
       .fork(handleAfterErr, handleAfterSuccess);
 
     function handleAfterErr(err) {
