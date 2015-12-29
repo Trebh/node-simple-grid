@@ -1,5 +1,5 @@
 {
-  "name": "grid",
+  "name": "node-simple-grid",
   "version": "0.0.1",
   "description": "module able to create and manage a grid to be used in simple games",
   "main": "index.js",
@@ -15,6 +15,7 @@
   "dependencies": {
     "control.async": "0.5.2",
     "data.task": "3.0.0",
+    "find-config": "0.3.0",
     "mongoose": "4.3.1",
     "ramda": "0.18.0"
   }

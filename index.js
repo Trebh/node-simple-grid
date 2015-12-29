@@ -5,8 +5,11 @@ var put = require('./api/put');
 var get = require('./api/get');
 var update = require('./api/update');
 var mongoose = require('mongoose');
-var config = require('./config/config');
 var remove = require('./api/delete');
+var findConfig = require('find-config');
+
+var configFile = findConfig('simple-grid-config.js', { dir: './config' });
+var config = require(configFile);
 
 mongoose.connect(config.MONGODB_URL);
 

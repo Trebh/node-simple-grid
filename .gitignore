@@ -1,4 +1,4 @@
-config/config.js
+config/simple-grid-config.js
 .jshintrc
 node_modules/*
 *.log
