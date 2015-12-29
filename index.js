@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 var remove = require('./api/delete');
 var findConfig = require('find-config');
 
-var configFile = findConfig('simple-grid-config.js', { dir: './config' });
+var configFile = findConfig('simple-grid-config.js', { dir: 'config' });
 var config = require(configFile);
 
 mongoose.connect(config.MONGODB_URL);
