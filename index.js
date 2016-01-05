@@ -20,5 +20,7 @@ module.exports = {
 	removeShape: remove.removeShape,
 	putObj: put.putObj,
 	getVector: get.getVector,
-	moveObj: update.moveObj
+	moveObj: update.moveObj,
+	findAndPopulate: get.findAndPopulate,
+	findDocById: get.findDocById
 };

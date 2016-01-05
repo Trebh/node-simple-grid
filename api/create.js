@@ -17,6 +17,10 @@ module.exports = {
 
 function createNewGridUncurried(rows, columns, vects, name) {
 
+  if (!rows || !columns) {
+    return new Task.rejected('method_invoke_err');
+  }
+
   var newGrid = new Grid({
   	name: name,
     rows: rows,

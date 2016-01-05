@@ -12,15 +12,15 @@ var vector = new Schema({
   content: {},
   _ofGrid: {
     type: Schema.Types.ObjectId,
-    ref: 'grid'
+    ref: 'Grid'
   },
   _ofShape: {
     type: Schema.Types.ObjectId,
-    ref: 'shape'
+    ref: 'Shape'
   },
   _ofElement: {
     type: Schema.Types.ObjectId,
-    ref: 'element'
+    ref: 'Element'
   }
 });
 

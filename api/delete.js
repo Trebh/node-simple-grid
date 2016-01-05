@@ -69,7 +69,7 @@ function deassocVects(prop, doc) {
 
 function findAndDeassocVector(prop, vectId) {
   return new Task.of(vectId)
-    .chain(findDocById(Vector))
+    .chain(findDocById('vector'))
     .map(R.curry(resetProp)(prop))
     .chain(saveVector);
 }

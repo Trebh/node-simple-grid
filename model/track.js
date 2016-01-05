@@ -10,11 +10,11 @@ var track = new Schema({
   name: String,
   _ofGrid: {
     type: Schema.Types.ObjectId,
-    ref: 'grid'
+    ref: 'Grid'
   },
   elements: {
     type: Schema.Types.ObjectId,
-    ref: 'element'
+    ref: 'Element'
   }
 });
 

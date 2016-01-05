@@ -2,9 +2,6 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var vector = require('./vector').schema;
-var shape = require('./shape').schema;
-var track = require('./track').schema;
 
 var grid = new Schema({
 	name: String,
@@ -12,15 +9,15 @@ var grid = new Schema({
   columns: Number,
   vectors: [{
     type: Schema.Types.ObjectId,
-    ref: 'vector'
+    ref: 'Vector'
   }],
   shapes: [{
     type: Schema.Types.ObjectId,
-    ref: 'shape'
+    ref: 'Shape'
   }],
   track:{
     type: Schema.Types.ObjectId,
-    ref: 'track'
+    ref: 'Track'
   }
 });
 

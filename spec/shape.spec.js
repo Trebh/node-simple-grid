@@ -13,7 +13,7 @@ describe('shape specs', function() {
   var newShape;
 
   beforeEach(function(done) {
-  	var toDo = createGrid(4, 4, [], 'shape_spec');
+    var toDo = createGrid(4, 4, [], 'shape_spec');
     toDo.fork(handleErr, handleSuccess);
 
     function handleErr(err) {
@@ -36,22 +36,22 @@ describe('shape specs', function() {
 
   it('should create a shape', function(done) {
 
-  	var that = this;
-  	var vectorArr = [{
-  		row: 0,
+    var that = this;
+    var vectorArr = [{
+      row: 0,
       column: 1
-  	},{
-  		row: 0,
+    }, {
+      row: 0,
       column: 2
-  	},{
-  		row: 0,
+    }, {
+      row: 0,
       column: 3
-  	},{
-  		row: 1,
+    }, {
+      row: 1,
       column: 1
-  	}];
+    }];
 
-    createCall(thisGrid, vectorArr, 'test_shape', handleError(that,done), assert);
+    createCall(thisGrid, vectorArr, 'test_shape', handleError(that, done), assert);
 
     function assert(shape) {
 
@@ -70,10 +70,11 @@ describe('shape specs', function() {
     }
   });
 
-	afterEach(function(done) {
-		var cleanUp = Async.parallel([removeShape(newShape), removeGrid(thisGrid)]);
+  afterEach(function(done) {
+    var cleanUp = Async.parallel([removeShape(newShape), removeGrid(thisGrid)]);
     cleanUp
       .fork(handleAfterErr, handleAfterSuccess);
+
     function handleAfterErr(err) {
       console.error(err);
       done.fail('grid deletion error: ' + err);

@@ -10,20 +10,20 @@ var element = new Schema({
   order: Number,
   vectors: [{
     type: Schema.Types.ObjectId,
-    ref: 'vector'
+    ref: 'Vector'
   }],
   _ofGrid: {
     type: Schema.Types.ObjectId,
-    ref: 'grid'
+    ref: 'Grid'
   },
   width: Number,
   origin: {
     type: Schema.Types.ObjectId,
-    ref: 'vector'
+    ref: 'Vector'
   },
   direction: {
     type: Schema.Types.ObjectId,
-    ref: 'vector'
+    ref: 'Vector'
   }
 });
 
