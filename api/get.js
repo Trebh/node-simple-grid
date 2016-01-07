@@ -15,7 +15,8 @@ var models = {
 module.exports = {
   getVector: R.curry(getVectorUncurried),
   findDocById: R.curry(findByIdUncurried),
-  findAndPopulate: R.curry(findAndPopulateUncurried)
+  findAndPopulate: R.curry(findAndPopulateUncurried),
+  searchDoc: R.curry(searchDocUncurried)
 };
 
 function getVectorUncurried(grid, vector) {
@@ -40,7 +41,7 @@ function getVectorUncurried(grid, vector) {
 function findByIdUncurried(modelName, docId) {
   var model = models[modelName];
   return new Task(function(reject, resolve) {
-    if (!model){
+    if (!model) {
       reject('method_invoke_err');
     }
     model.findOne({
@@ -60,7 +61,7 @@ function findAndPopulateUncurried(modelName, props, docId) {
   var concatWithSpace = (a, b) => a === '' ? b : a + ' ' + b;
   var preparedProps = R.reduce(concatWithSpace, '', props);
   return new Task(function(reject, resolve) {
-    if (!model){
+    if (!model) {
       reject('method_invoke_err');
     }
     model.findOne({
@@ -69,12 +70,31 @@ function findAndPopulateUncurried(modelName, props, docId) {
       .populate(preparedProps)
       .exec(foundIt);
 
-      function foundIt(err, doc){
-        if (err){
-          reject(err);
-          return;
-        }
-        resolve(doc);
+    function foundIt(err, doc) {
+      if (err) {
+        reject(err);
+        return;
       }
+      resolve(doc);
+    }
+  });
+}
+
+function searchDocUncurried(modelName, whereConditionsObj) {
+  var model = models[modelName];
+  return new Task(function(reject, resolve) {
+    if (!model) {
+      reject('method_invoke_err');
+    }
+    model.findOne(whereConditionsObj)
+      .exec(foundIt);
+
+    function foundIt(err, doc) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(doc);
+    }
   });
 }

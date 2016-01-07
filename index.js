@@ -22,5 +22,6 @@ module.exports = {
 	getVector: get.getVector,
 	moveObj: update.moveObj,
 	findAndPopulate: get.findAndPopulate,
-	findDocById: get.findDocById
+	findDocById: get.findDocById,
+	searchDoc: get.searchDoc
 };
