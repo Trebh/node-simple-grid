@@ -1,5 +1,7 @@
 language: node_js
 services:
   - mongodb
+before_script:
+  - "npm i -g jasmine-node"
 node_js:
   - "4.1"
