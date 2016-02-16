@@ -3,5 +3,6 @@ services:
   - mongodb
 before_script:
   - "npm i -g jasmine-node"
+  - sleep 5
 node_js:
   - "4.1"
