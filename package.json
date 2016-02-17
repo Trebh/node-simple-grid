@@ -4,7 +4,7 @@
   "description": "module able to create and manage a grid to be used in simple games",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-node spec/",
+    "test": "jasmine-node spec/ --forceexit",
     "start": "node index.js"
   },
   "author": "Riccardo Agnoletto",
