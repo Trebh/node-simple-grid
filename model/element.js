@@ -2,8 +2,6 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var grid = require('./grid').schema;
-var vector = require('./vector').schema;
 
 var element = new Schema({
   name: String,
