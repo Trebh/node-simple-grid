@@ -75,7 +75,7 @@ function pointToNextEl(a, b) {
     };
   }
 
-  var nextShouldBe = vectSumUncurried(a.elem.origin, a.elem.direction);
+  var nextShouldBe = vectSumUncurried(a.elem.origin, a.elem.direction, 'plus');
   return {
     isPrevoiousOk: vectEqUncurried(nextShouldBe, b.origin),
     elem: b

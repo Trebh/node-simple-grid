@@ -2,17 +2,30 @@
 
 var Grid = require('../model/grid').model;
 var Vector = require('../model/vector').model;
+var Element = require('../model/element').model;
+var Track = require('../model/track').model;
 var Task = require('data.task');
 var R = require('ramda');
 var Async = require('control.async')(Task);
 var putObj = require('./put').putObj;
 var Shape = require('../model/shape').model;
 var getVector = require('./get').getVector;
+var findAndPopulate = require('./get').findAndPopulate;
 var updateVectorProp = require('./update').updateVector;
+var utils = require('../utils/utils');
+
+var models = {
+  vector: Vector,
+  grid: Grid,
+  shape: Shape,
+  element: Element,
+  track: Track
+};
 
 module.exports = {
   createNewGrid: R.curry(createNewGridUncurried),
-  createShape: R.curry(createShapeUncurried)
+  createShape: R.curry(createShapeUncurried),
+  createTrack: R.curry(createTrackUncurried)
 };
 
 function createNewGridUncurried(rows, columns, vects, name) {
@@ -22,7 +35,7 @@ function createNewGridUncurried(rows, columns, vects, name) {
   }
 
   var newGrid = new Grid({
-  	name: name,
+    name: name,
     rows: rows,
     columns: columns
   });
@@ -42,7 +55,7 @@ function createNewGridUncurried(rows, columns, vects, name) {
     })
     .chain(function(savedGrid) {
       newGrid = savedGrid;
-      var saveAllVectors = Async.parallel(R.map(saveVector, vectors));
+      var saveAllVectors = Async.parallel(R.map(R.curry(saveModel)('vector'), vectors));
       return saveAllVectors;
     })
     .chain(function() {
@@ -108,14 +121,18 @@ function getIterator(rows, columns) {
   };
 }
 
-function saveVector(vector) {
+function saveModel(modelName, obj) {
+  var model = models[modelName];
   return new Task(function(reject, resolve) {
-    vector.save(function(err) {
+    if (!model) {
+      reject('unknow model name');
+    }
+    obj.save(function(err) {
       if (err) {
         reject(err);
         return;
       }
-      resolve(vector);
+      resolve(obj);
       return;
     });
   });
@@ -129,25 +146,25 @@ function updateVectorContent(grid) {
 
 function createShapeUncurried(grid, vectors, name) {
 
-	var modelVectors = R.map(R.curry(vectToModel)(grid), vectors);
+  var modelVectors = R.map(R.curry(vectToModel)(grid), vectors);
 
   var newShape = new Shape({
-  	name: name,
-  	modelVectors,
-  	_ofGrid: grid.id
+    name: name,
+    modelVectors,
+    _ofGrid: grid.id
   });
 
   var findVectsTask = R.map(getVector(grid), modelVectors);
   return Async.parallel(findVectsTask)
-  	.chain(noNullResults)
-  	.chain(R.curry(updateVectorsShape)(grid, newShape))
-  	.map(passNewShape(newShape))
-  	.chain(persistShape);
+    .chain(noNullResults)
+    .chain(R.curry(updateVectorsShape)(grid, newShape))
+    .map(passNewShape(newShape))
+    .chain(persistShape);
 }
 
-function persistShape(shape){
-	return new Task(function(reject, resolve){
-		shape.save(function(err) {
+function persistShape(shape) {
+  return new Task(function(reject, resolve) {
+    shape.save(function(err) {
       if (err) {
         reject(err);
         return;
@@ -155,47 +172,126 @@ function persistShape(shape){
       resolve(shape);
       return;
     });
-	});
+  });
 }
 
-function passNewShape(shape){
-	return function(vectors){
-		shape.vectors = vectors;
-		return shape;
-	};
+function passNewShape(shape) {
+  return function(vectors) {
+    shape.vectors = vectors;
+    return shape;
+  };
 }
 
-function noNullResults(arrRes){
-	var isNull = function(a){
-		return ((a === null) || (a === undefined));
-	};
-	return new Task(function(reject,resolve){
-		if (R.any(isNull, arrRes)){
-			reject('err_vector_not_found');
-			return;
-		} else {
-			resolve(arrRes);
-			return;
-		}
-	});
+function noNullResults(arrRes) {
+  var isNull = function(a) {
+    return ((a === null) || (a === undefined));
+  };
+  return new Task(function(reject, resolve) {
+    if (R.any(isNull, arrRes)) {
+      reject('err_vector_not_found');
+      return;
+    } else {
+      resolve(arrRes);
+      return;
+    }
+  });
 }
 
-function updateVectorsShape(grid, shape, arrVects){
-	var newArr = R.map(R.curry(insertShape)(shape), arrVects);
-	var updateTasks = R.map(updateVectorProp(grid), newArr);
-	return Async.parallel(updateTasks);
+function updateVectorsShape(grid, shape, arrVects) {
+  var newArr = R.map(R.curry(insertShape)(shape), arrVects);
+  var updateTasks = R.map(updateVectorProp(grid), newArr);
+  return Async.parallel(updateTasks);
 }
 
-function insertShape(shape, vect){
-	vect._ofShape = shape.id;
-	return vect;
+function insertShape(shape, vect) {
+  vect._ofShape = shape.id;
+  return vect;
 }
 
-function vectToModel(grid, vect){
-	return new Vector({
-		row: vect.row,
-		column: vect.column,
-		_ofGrid: grid.id,
-		content: vect.content
-	});
+function vectToModel(grid, vect) {
+  return new Vector({
+    row: vect.row,
+    column: vect.column,
+    _ofGrid: grid.id,
+    content: vect.content
+  });
+}
+
+function createTrackUncurried(grid, elements, name) {
+  if (!utils.checkElementsConn(elements)) {
+    return Task.rejected('elements can not be disconnected');
+  }
+  return new Task.of(grid.id)
+    .chain(R.curry(findAndPopulate)('grid', ['vectors']))
+    .chain(R.curry(createElements)(R.__, elements))
+    .chain(R.curry(saveTrack)(grid, R.__, name));
+}
+
+function createElements(grid, elements) {
+
+  var preparedElements = R.map(R.compose(R.curry(prepareElementVectors)(grid), R.curry(prepareOriginDirection)(grid)), elements);
+  var allVectors = R.concat(R.flatten(R.pluck('vectors', preparedElements)), R.pluck('origin', preparedElements), R.pluck('direction', preparedElements));
+
+  var buildElTask = R.compose(R.curry(saveModel)('element'), R.curry(usingConstructor)(grid));
+  var buildVectTask = R.curry(saveModel)('vector');
+
+  return Async.parallel(R.map(buildVectTask, allVectors))
+    .chain(function(savedVects){
+      if (!savedVects || (savedVects.length === 0)){
+        return Task.rejected('element vectors creation error');
+      }
+      return Async.parallel(R.map(buildElTask, preparedElements));
+    });
+
+  function usingConstructor(grid, el) {
+    el._ofGrid = grid.id || grid._id;
+    return new Element(el);
+  }
+}
+
+function prepareElementVectors(grid, element) {
+  var elementVectors = R.filter(R.curry(checkPosDistance)(element.origin, element.direction, element.width), grid.vectors);
+  element.vectors = elementVectors;
+  return element;
+}
+
+function checkPosDistance(origin, direction, width, vectorToCheck) {
+  var diffVect = utils.vectDiff(vectorToCheck, origin);
+  var coeffProjection = utils.vectScalar(diffVect, direction) / utils.vectScalar(direction, direction);
+  var dist = utils.vectNorm(utils.vectDiff(diffVect, utils.vectScale(coeffProjection, direction)));
+
+  return ((coeffProjection >= 0) && (coeffProjection <= 1) && (dist <= width));
+}
+
+function prepareOriginDirection(grid, element) {
+
+  var orig = new Vector({
+    row: element.origin.row,
+    column: element.origin.column,
+    content: {},
+    _ofGrid: grid.id || grid._id
+  });
+
+  var direction = new Vector({
+    row: element.direction.row,
+    column: element.direction.column,
+    content: {},
+    _ofGrid: grid.id || grid._id
+  });
+
+  element.origin = orig;
+  element.direction = direction;
+
+  return element;
+}
+
+function saveTrack(grid, elements, name) {
+  var elementIds = R.pluck('id', elements);
+  var track = new Track({
+    name: name,
+    elements: elementIds,
+    _ofGrid: grid.id
+  });
+
+  return saveModel('track', track);
 }

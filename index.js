@@ -20,6 +20,7 @@ mongoose.connect(config.MONGODB_URL);
 module.exports = {
   createNewGrid: create.createNewGrid,
   createShape: create.createShape,
+  createTrack: create.createTrack,
   removeGrid: remove.removeGrid,
   removeShape: remove.removeShape,
   putObj: put.putObj,
