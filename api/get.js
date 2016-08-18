@@ -4,12 +4,14 @@ var Task = require('data.task');
 var Vector = require('../model/vector').model;
 var Grid = require('../model/grid').model;
 var Shape = require('../model/shape').model;
+var Element = require('../model/element').model;
 var R = require('ramda');
 
 var models = {
   vector: Vector,
   grid: Grid,
-  shape: Shape
+  shape: Shape,
+  element: Element
 };
 
 module.exports = {

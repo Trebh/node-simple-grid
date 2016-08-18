@@ -8,19 +8,20 @@ var putObj = require('./put').putObj;
 var findDocById = require('./get').findDocById;
 
 module.exports = {
-  removeGrid: removeDocAndVects,
+  removeGrid: R.curry(removeDocAndSubDocs)('vectors'),
   removeObj: R.curry(removeObjUncurried),
-  removeShape: R.curry(removeDocAndDeassociateVectsUncurried)('_ofShape')
+  removeShape: R.curry(removeDocAndDeassociateVectsUncurried)('_ofShape'),
+  removeTrack: R.curry(removeDocAndSubDocs)('elements')
 };
 
-function removeDocAndVects(doc) {
+function removeDocAndSubDocs(subModelName, doc) {
   return new Task.of(doc)
-    .chain(removeVectorsStep)
+    .chain(R.curry(removeSubDocsStep)(subModelName))
     .chain(removeDocStep);
 }
 
-function removeVectorsStep(doc) {
-  return Async.parallel(R.map(findAndRemoveVector, doc.vectors))
+function removeSubDocsStep(subModelName, doc) {
+  return Async.parallel(R.map(findAndRemoveFromDocID, doc[subModelName]))
     .map(function() {
       return doc;
     });
@@ -37,7 +38,7 @@ function removeDocStep(doc) {
   });
 }
 
-function findAndRemoveVector(objId) {
+function findAndRemoveFromDocID(objId) {
   return new Task(function(reject, resolve) {
     Vector.findByIdAndRemove(objId)
       .then(function() {

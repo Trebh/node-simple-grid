@@ -7,6 +7,7 @@ var update = require('./api/update');
 var mongoose = require('mongoose');
 var remove = require('./api/delete');
 var findConfig = require('find-config');
+var tracks = require('./tracks/tracks').tracks;
 
 var configFile = findConfig('simple-grid-config.js', {
   dir: 'config'
@@ -23,10 +24,12 @@ module.exports = {
   createTrack: create.createTrack,
   removeGrid: remove.removeGrid,
   removeShape: remove.removeShape,
+  removeTrack: remove.removeTrack,
   putObj: put.putObj,
   getVector: get.getVector,
   moveObj: update.moveObj,
   findAndPopulate: get.findAndPopulate,
   findDocById: get.findDocById,
-  searchDoc: get.searchDoc
+  searchDoc: get.searchDoc,
+  tracks: tracks
 };

@@ -230,18 +230,12 @@ function createTrackUncurried(grid, elements, name) {
 function createElements(grid, elements) {
 
   var preparedElements = R.map(R.compose(R.curry(prepareElementVectors)(grid), R.curry(prepareOriginDirection)(grid)), elements);
-  var allVectors = R.concat(R.flatten(R.pluck('vectors', preparedElements)), R.pluck('origin', preparedElements), R.pluck('direction', preparedElements));
+  //var allVectors = R.concat(R.flatten(R.pluck('vectors', preparedElements)), R.pluck('origin', preparedElements), R.pluck('direction', preparedElements));
 
   var buildElTask = R.compose(R.curry(saveModel)('element'), R.curry(usingConstructor)(grid));
-  var buildVectTask = R.curry(saveModel)('vector');
+  //var buildVectTask = R.curry(saveModel)('vector');
 
-  return Async.parallel(R.map(buildVectTask, allVectors))
-    .chain(function(savedVects){
-      if (!savedVects || (savedVects.length === 0)){
-        return Task.rejected('element vectors creation error');
-      }
-      return Async.parallel(R.map(buildElTask, preparedElements));
-    });
+  return Async.parallel(R.map(buildElTask, preparedElements));
 
   function usingConstructor(grid, el) {
     el._ofGrid = grid.id || grid._id;

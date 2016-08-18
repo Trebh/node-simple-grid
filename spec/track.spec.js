@@ -1,7 +1,7 @@
 'use strict';
 
 var createTrack = require('../index').createTrack;
-// var removeTrack = require('../index').removeTrack;
+var removeTrack = require('../index').removeTrack;
 var createGrid = require('../index').createNewGrid;
 var removeGrid = require('../index').removeGrid;
 var Task = require('data.task');
@@ -59,19 +59,19 @@ describe('track specs', function() {
     }
   });
 
-  // afterEach(function(done) {
-  //   var cleanUp = Async.parallel([removeGrid(thisGrid)]);
-  //   cleanUp
-  //     .fork(handleAfterErr, handleAfterSuccess);
+  afterEach(function(done) {
+    var cleanUp = Async.parallel([removeGrid(thisGrid), removeTrack(newTrack)]);
+    cleanUp
+      .fork(handleAfterErr, handleAfterSuccess);
 
-  //   function handleAfterErr(err) {
-  //     console.error(err);
-  //     done.fail('grid deletion error: ' + err);
-  //   }
+    function handleAfterErr(err) {
+      console.error(err);
+      done.fail('grid deletion error: ' + err);
+    }
 
-  //   function handleAfterSuccess() {
-  //     done();
-  //   }
-  // });
+    function handleAfterSuccess() {
+      done();
+    }
+  });
 
 });
