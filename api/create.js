@@ -221,7 +221,7 @@ function createTrackUncurried(grid, elements, name) {
   if (!utils.checkElementsConn(elements)) {
     return Task.rejected('elements can not be disconnected');
   }
-  return new Task.of(grid.id)
+  return new Task.of(grid.id || grid._id)
     .chain(R.curry(findAndPopulate)('grid', ['vectors']))
     .chain(R.curry(createElements)(R.__, elements))
     .chain(R.curry(saveTrack)(grid, R.__, name));
