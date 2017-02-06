@@ -5,13 +5,15 @@ var Vector = require('../model/vector').model;
 var Grid = require('../model/grid').model;
 var Shape = require('../model/shape').model;
 var Element = require('../model/element').model;
+var Track = require('../model/track').model;
 var R = require('ramda');
 
 var models = {
   vector: Vector,
   grid: Grid,
   shape: Shape,
-  element: Element
+  element: Element,
+  track: Track
 };
 
 module.exports = {

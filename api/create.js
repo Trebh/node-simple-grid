@@ -224,7 +224,12 @@ function createTrackUncurried(grid, elements, name) {
   return new Task.of(grid.id || grid._id)
     .chain(R.curry(findAndPopulate)('grid', ['vectors']))
     .chain(R.curry(createElements)(R.__, elements))
-    .chain(R.curry(saveTrack)(grid, R.__, name));
+    .chain(R.curry(saveTrack)(grid, R.__, name))
+    .chain(R.curry(populateTrackElements)(grid));
+}
+
+function populateTrackElements(grid, track){
+  return findAndPopulate('track', ['elements'], track.id);
 }
 
 function createElements(grid, elements) {
