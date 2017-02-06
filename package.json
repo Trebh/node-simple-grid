@@ -1,6 +1,6 @@
 {
   "name": "node-simple-grid",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "module able to create and manage a grid to be used in simple games",
   "main": "index.js",
   "scripts": {
