@@ -47,6 +47,8 @@ describe('track specs', function() {
       expect(track.name).toBe('test_track');
       expect(track.elements.length).toBe(9);
       expect(track.elements[0].name).toBe('rettilineo arrivo');
+      expect(track.elements[0].vectors).toBeDefined();
+      expect(track.elements[0].vectors.length).toBeGreaterThan(1);
 
       newTrack = track;
       done();

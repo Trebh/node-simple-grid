@@ -228,8 +228,22 @@ function createTrackUncurried(grid, elements, name) {
     .chain(R.curry(populateTrackElements)(grid));
 }
 
-function populateTrackElements(grid, track){
-  return findAndPopulate('track', ['elements'], track.id);
+function populateTrackElements(grid, track) {
+  var thisTrack = track;
+  return findAndPopulate('track', ['elements'], track.id)
+    .chain(function(trackWithEls) {
+      thisTrack = trackWithEls;
+      var populateTasks = R.map(populateElementVects, trackWithEls.elements);
+      return Async.parallel(populateTasks);
+    })
+    .map(function(elementsWithVecs){
+      thisTrack.elements = elementsWithVecs;
+      return thisTrack;
+    });
+}
+
+function populateElementVects(element) {
+  return findAndPopulate('element', ['vectors'], element.id);
 }
 
 function createElements(grid, elements) {
