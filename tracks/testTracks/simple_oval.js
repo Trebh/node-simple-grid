@@ -16,8 +16,8 @@ function simpleOval() {
     name: 'rettilineo arrivo',
     order: 0,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(10, 4, {}),
+    width: 4,
+    origin: utils.vectorObj(15, 10, {}),
     direction: utils.vectorObj(-4, 0, {})
   };
 
@@ -25,26 +25,26 @@ function simpleOval() {
     name: 'prima curva',
     order: 1,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(6, 4, {}),
-    direction: utils.vectorObj(-2, 2, {})
+    width: 4,
+    origin: utils.vectorObj(11, 10, {}),
+    direction: utils.vectorObj(-3, 3, {})
   };
 
   var el2 = {
     name: 'rettilineo corto 1',
     order: 2,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(4, 6, {}),
-    direction: utils.vectorObj(0, 2, {})
+    width: 4,
+    origin: utils.vectorObj(8, 13, {}),
+    direction: utils.vectorObj(0, 4, {})
   };
 
   var el3 = {
     name: 'seconda curva',
     order: 3,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(4, 8, {}),
+    width: 4,
+    origin: utils.vectorObj(8, 17, {}),
     direction: utils.vectorObj(3, 3, {})
   };
 
@@ -52,17 +52,17 @@ function simpleOval() {
     name: 'secondo rettilineo',
     order: 4,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(7, 11, {}),
-    direction: utils.vectorObj(5, 0, {})
+    width: 4,
+    origin: utils.vectorObj(11, 20, {}),
+    direction: utils.vectorObj(8, 0, {})
   };
 
   var el5 = {
     name: 'terza curva',
     order: 5,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(12, 11, {}),
+    width: 4,
+    origin: utils.vectorObj(19, 20, {}),
     direction: utils.vectorObj(3, -3, {})
   };
 
@@ -70,26 +70,26 @@ function simpleOval() {
     name: 'rettilineo corto 2',
     order: 6,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(15, 8, {}),
-    direction: utils.vectorObj(0, -2, {})
+    width: 4,
+    origin: utils.vectorObj(22, 17, {}),
+    direction: utils.vectorObj(0, -4, {})
   };
 
   var el7 = {
     name: 'quarta curva',
     order: 7,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(15, 6, {}),
-    direction: utils.vectorObj(-2, -2, {})
+    width: 4,
+    origin: utils.vectorObj(22, 13, {}),
+    direction: utils.vectorObj(-4, -3, {})
   };
 
   var el8 = {
     name: 'arrivo',
     order: 8,
     vectors: [],
-    width: 3,
-    origin: utils.vectorObj(13, 4, {}),
+    width: 4,
+    origin: utils.vectorObj(18, 10, {}),
     direction: utils.vectorObj(-3, 0, {})
   };
 

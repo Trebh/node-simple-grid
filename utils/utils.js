@@ -22,7 +22,7 @@ function correctPos(row, column, vect) {
   return ((vect.row === row) && (vect.column === column));
 }
 
-function vectorObjContructorUncurried(row, column, content) {
+function vectorObjContructorUncurried(column, row, content) {
   return {
     row: row,
     column: column,
