@@ -4,6 +4,7 @@ var createTrack = require('../index').createTrack;
 var removeTrack = require('../index').removeTrack;
 var createGrid = require('../index').createNewGrid;
 var removeGrid = require('../index').removeGrid;
+var utils = require('../utils/utils');
 var Task = require('data.task');
 var Async = require('control.async')(Task);
 var simpleOval = require('../tracks/testTracks/simple_oval').simpleOval;
@@ -49,6 +50,12 @@ describe('track specs', function() {
       expect(track.elements[0].name).toBe('rettilineo arrivo');
       expect(track.elements[0].vectors).toBeDefined();
       expect(track.elements[0].vectors.length).toBeGreaterThan(1);
+
+      var vect1 = utils.filterVector(11,11, track.elements[0].vectors);
+      var vect2 = utils.filterVector(11,11, track.elements[1].vectors);
+
+      expect(vect1).toBeDefined();
+      expect(vect2).not.toBeDefined();
 
       newTrack = track;
       done();
