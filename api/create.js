@@ -247,8 +247,8 @@ function populateElementVects(element) {
 }
 
 function createElements(grid, elements) {
-  var gridClone = R.clone(grid);
-  var preparedElements = R.map(R.compose(R.curry(prepareElementVectors)(gridClone), R.curry(prepareOriginDirection)(gridClone)), elements);
+
+  var preparedElements = R.map(R.compose(R.curry(prepareElementVectors)(grid), R.curry(prepareOriginDirection)(grid)), elements);
   //var allVectors = R.concat(R.flatten(R.pluck('vectors', preparedElements)), R.pluck('origin', preparedElements), R.pluck('direction', preparedElements));
 
   var buildElTask = R.compose(R.curry(saveModel)('element'), R.curry(usingConstructor)(grid));
@@ -265,12 +265,7 @@ function createElements(grid, elements) {
 function prepareElementVectors(grid, element) {
   var elementVectors = R.filter(R.curry(checkPosDistance)(element.origin, element.direction, element.width), grid.vectors);
   element.vectors = elementVectors;
-  grid.vectors = R.filter(R.curry(removeTakenVecs)(elementVectors), grid.vectors);
   return element;
-}
-
-function removeTakenVecs(vecsToRemove, vecToCheck){
-  R.filter(R.compose(R.not, utils.vectEq(vecToCheck)), vecsToRemove);
 }
 
 function checkPosDistance(origin, direction, width, vectorToCheck) {
